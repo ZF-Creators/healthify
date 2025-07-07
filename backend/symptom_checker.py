@@ -1,20 +1,23 @@
-import joblib
+from sklearn.naive_bayes import MultinomialNB
+import pandas as pd
 
-# Load model and encoder
-model = joblib.load("backend/model.pkl")
-encoder = joblib.load("backend/symptom_encoder.pkl")
+# Dummy dataset
+data = {
+    'fever': [1, 1, 0, 0],
+    'cough': [1, 0, 1, 0],
+    'headache': [0, 1, 1, 0],
+    'disease': ['Flu', 'Migraine', 'Cold', 'Healthy']
+}
 
-def predict_disease(symptom_list):
-    # Convert user input to encoded format
-    symptoms = [s.strip().lower() for s in symptom_list]
-    input_vector = encoder.transform([symptoms])
+df = pd.DataFrame(data)
+X = df.drop('disease', axis=1)
+y = df['disease']
 
-    prediction = model.predict(input_vector)[0]
-    proba = model.predict_proba(input_vector)
+model = MultinomialNB()
+model.fit(X, y)
 
-    # Top 3 predictions
-    top_indices = proba[0].argsort()[-3:][::-1]
-    diseases = model.classes_
-    top_probs = {diseases[i]: round(proba[0][i]*100, 1) for i in top_indices}
-
-    return prediction, top_probs
+def predict_disease(symptom_input):
+    input_data = [[1 if symptom in symptom_input else 0 for symptom in ['fever', 'cough', 'headache']]]
+    prediction = model.predict(input_data)[0]
+    probabilities = model.predict_proba(input_data)[0]
+    return prediction, dict(zip(model.classes_, [round(p*100, 2) for p in probabilities]))
