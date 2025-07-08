@@ -1,95 +1,182 @@
 body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
-    background: #ffffff;
-    color: #333;
+    background: #f5f5f5;
+    color: #222;
 }
 
-header {
-    background-color: #ffffff;
-    padding: 20px 40px;
-    font-weight: bold;
-    font-size: 20px;
-    color: #4CA7A8;
+.main-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    animation: fadeIn 1.2s ease-in;
 }
 
-.container {
+.left-panel {
+    flex: 1;
+    padding: 60px 40px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 40px;
+    justify-content: center;
+    background: #ffffff;
+    animation: slideInLeft 1s ease;
 }
 
-.hero {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 1000px;
-    margin-bottom: 50px;
+.left-panel h1 {
+    font-size: 2.8rem;
+    color: #2694ab;
+    margin-bottom: 10px;
+    font-weight: 600;
+    animation: bounceIn 1.3s ease;
 }
 
-.hero .text {
-    max-width: 500px;
-}
-
-.hero h1 {
-    font-size: 48px;
-    color: #4CA7A8;
-}
-
-.hero p {
-    font-size: 18px;
+.tagline {
+    font-size: 1rem;
     color: #555;
-    margin-top: 10px;
+    margin-bottom: 30px;
+    animation: fadeInUp 1.5s ease;
 }
 
-.hero .image img {
-    max-width: 400px;
-    border-radius: 20px;
-}
-
-.chatbox {
-    background: #f9f9f9;
-    padding: 30px;
-    border-radius: 15px;
+form textarea {
     width: 100%;
-    max-width: 700px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.chatbox h2 {
-    color: #4CA7A8;
-    margin-bottom: 15px;
-}
-
-.chatbox form {
-    display: flex;
-    gap: 10px;
-}
-
-.chatbox input {
-    flex: 1;
-    padding: 10px;
+    height: 120px;
+    padding: 15px;
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 12px;
+    font-size: 15px;
+    margin-bottom: 15px;
+    resize: vertical;
+    transition: all 0.3s ease;
 }
 
-.chatbox button {
-    background: #4CA7A8;
-    color: white;
-    padding: 10px 20px;
+form textarea:focus {
+    outline: none;
+    border-color: #2694ab;
+    box-shadow: 0 0 5px rgba(38, 148, 171, 0.4);
+}
+
+form button {
+    background-color: #2694ab;
+    color: #fff;
+    padding: 12px 25px;
+    font-size: 16px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
+    transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
 }
 
-.chatbox button:hover {
-    background: #3a8686;
+form button:hover {
+    background-color: #1e7f93;
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(38, 148, 171, 0.4);
+}
+
+.result, .matched, .error {
+    margin-top: 20px;
+    font-size: 16px;
+    word-wrap: break-word;
+    animation: fadeInUp 0.9s ease;
 }
 
 .result {
-    margin-top: 20px;
-    padding-top: 10px;
-    border-top: 1px solid #ddd;
+    color: #1b5e20;
+}
+
+.matched {
+    color: #333;
+}
+
+.error {
+    color: red;
+}
+
+.right-panel {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #e9f7fc;
+    animation: slideInRight 1s ease;
+}
+
+.hero-img {
+    max-width: 85%;
+    max-height: 85%;
+    border-radius: 25px;
+    object-fit: cover;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    animation: zoomIn 1.4s ease;
+}
+
+footer {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 0.9rem;
+    background: #ffffff;
+    color: #999;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    animation: fadeIn 1.2s ease-in;
+}
+
+/* 🎬 ANIMATIONS */
+
+@keyframes fadeIn {
+    0% {opacity: 0;}
+    100% {opacity: 1;}
+}
+
+@keyframes slideInLeft {
+    0% {transform: translateX(-100%); opacity: 0;}
+    100% {transform: translateX(0); opacity: 1;}
+}
+
+@keyframes slideInRight {
+    0% {transform: translateX(100%); opacity: 0;}
+    100% {transform: translateX(0); opacity: 1;}
+}
+
+@keyframes fadeInUp {
+    0% {transform: translateY(30px); opacity: 0;}
+    100% {transform: translateY(0); opacity: 1;}
+}
+
+@keyframes bounceIn {
+    0%, 20%, 40%, 60%, 80%, 100% {
+        transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    0% {
+        opacity: 0;
+        transform: scale3d(0.3, 0.3, 0.3);
+    }
+    20% {
+        transform: scale3d(1.1, 1.1, 1.1);
+    }
+    40% {
+        transform: scale3d(0.9, 0.9, 0.9);
+    }
+    60% {
+        opacity: 1;
+        transform: scale3d(1.03, 1.03, 1.03);
+    }
+    80% {
+        transform: scale3d(0.97, 0.97, 0.97);
+    }
+    100% {
+        opacity: 1;
+        transform: scale3d(1, 1, 1);
+    }
+}
+
+@keyframes zoomIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
