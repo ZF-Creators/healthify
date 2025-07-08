@@ -2,23 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Healthify AI Chatbot</title>
+    <title>Healthify | AI Symptom Checker</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
 </head>
-<body>
-<div class="chat-container">
-    <div class="chat-header">🩺 Healthify - AI Symptom Checker</div>
-    <div class="chat-box" id="chat-box">
-        {% for item in history %}
-            <div class="chat-bubble user">You: {{ item.user }}</div>
-            <div class="chat-bubble bot">Healthify: {{ item.response }}</div>
-        {% endfor %}
+<body class="start-screen">
+    <div class="start-container">
+        <img src="https://cdn.pixabay.com/photo/2020/04/21/22/50/doctor-5076564_960_720.png" alt="healthbot" class="start-image">
+        <h1>Welcome to Healthify!</h1>
+        <p>Your AI-powered assistant for quick health insights.</p>
+        <a href="{{ url_for('chat') }}" class="start-btn">Start Chatting</a>
     </div>
-    <form method="POST" class="chat-input">
-        <textarea name="symptoms" placeholder="Enter your symptoms here..." required></textarea>
-        <button type="submit">Send</button>
-    </form>
-</div>
 </body>
 </html>
