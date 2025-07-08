@@ -1,23 +1,21 @@
-from sklearn.naive_bayes import MultinomialNB
-import pandas as pd
+import joblib
+import os
 
-# Dummy dataset
-data = {
-    'fever': [1, 1, 0, 0],
-    'cough': [1, 0, 1, 0],
-    'headache': [0, 1, 1, 0],
-    'disease': ['Flu', 'Migraine', 'Cold', 'Healthy']
-}
+# Ensure the model path is correct regardless of where it's run from
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "model.pkl")
 
-df = pd.DataFrame(data)
-X = df.drop('disease', axis=1)
-y = df['disease']
+# Load the trained pipeline (TF-IDF + Logistic Regression)
+model = joblib.load(MODEL_PATH)
 
-model = MultinomialNB()
-model.fit(X, y)
+def predict_disease(symptom_text):
+    """
+    Predicts the disease based on a string of symptoms entered by the user.
 
-def predict_disease(symptom_input):
-    input_data = [[1 if symptom in symptom_input else 0 for symptom in ['fever', 'cough', 'headache']]]
-    prediction = model.predict(input_data)[0]
-    probabilities = model.predict_proba(input_data)[0]
-    return prediction, dict(zip(model.classes_, [round(p*100, 2) for p in probabilities]))
+    Parameters:
+    - symptom_text (str): A free-text description or list of symptoms
+
+    Returns:
+    - str: Predicted disease label
+    """
+    prediction = model.predict([symptom_text])
+    return prediction[0]
