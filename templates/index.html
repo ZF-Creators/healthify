@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Healthify - AI Symptom Checker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+
+    <!-- Add this for scroll animations or extra libraries later -->
+</head>
+<body>
+    <div class="main-container">
+        <div class="left-panel">
+            <h1>HEALTHIFY</h1>
+            <p class="tagline" id="tagline"></p> <!-- We'll type this dynamically -->
+
+            <form method="post">
+                <textarea name="symptoms" placeholder="Describe your symptoms..." required>{{ user_input }}</textarea>
+                <button type="submit">Check Diagnosis</button>
+            </form>
+
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% endif %}
+
+            {% if matched %}
+                <div class="matched">
+                    <strong>Matched Symptoms:</strong><br>
+                    {{ matched | join(", ") }}
+                </div>
+            {% endif %}
+
+            {% if prediction %}
+                <div class="result">
+                    🩺 <strong>Predicted Disease:</strong><br>
+                    {{ prediction }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="right-panel">
+            <img src="https://cdn.pixabay.com/photo/2017/04/10/15/34/pills-2211886_1280.jpg" alt="health" class="hero-img">
+        </div>
+    </div>
+
+    <footer>
+        © 2025 Healthify | Built with ❤️ by Faraz
+    </footer>
+
+    <!-- 🎯 Typing Animation Script -->
+    <script>
+        const tagline = document.getElementById("tagline");
+        const text = "Ask your health anytime and anywhere with our specialist AI platform";
+        let i = 0;
+
+        function typeEffect() {
+            if (i < text.length) {
+                tagline.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typeEffect, 30); // speed
+            }
+        }
+
+        tagline.innerHTML = ""; // Clear placeholder
+        typeEffect();
+    </script>
+</body>
+</html>
