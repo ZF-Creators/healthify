@@ -1,0 +1,95 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #ffffff;
+    color: #333;
+}
+
+header {
+    background-color: #ffffff;
+    padding: 20px 40px;
+    font-weight: bold;
+    font-size: 20px;
+    color: #4CA7A8;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+}
+
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1000px;
+    margin-bottom: 50px;
+}
+
+.hero .text {
+    max-width: 500px;
+}
+
+.hero h1 {
+    font-size: 48px;
+    color: #4CA7A8;
+}
+
+.hero p {
+    font-size: 18px;
+    color: #555;
+    margin-top: 10px;
+}
+
+.hero .image img {
+    max-width: 400px;
+    border-radius: 20px;
+}
+
+.chatbox {
+    background: #f9f9f9;
+    padding: 30px;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 700px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.chatbox h2 {
+    color: #4CA7A8;
+    margin-bottom: 15px;
+}
+
+.chatbox form {
+    display: flex;
+    gap: 10px;
+}
+
+.chatbox input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.chatbox button {
+    background: #4CA7A8;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.chatbox button:hover {
+    background: #3a8686;
+}
+
+.result {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+}
