@@ -1,31 +1,32 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import joblib
-import numpy as np
 
 app = Flask(__name__)
+
+# Load trained model
 model = joblib.load("backend/model.pkl")
-history = []
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route("/")
 def home():
-    global history
+    return render_template("index.html")
+
+@app.route("/chat", methods=["GET", "POST"])
+def chat():
+    prediction = None
     user_input = ""
-    if request.method == 'POST':
-        user_input = request.form['symptoms']
-        if user_input.strip():
-            try:
-                pred_probs = model.predict_proba([user_input])[0]
-                classes = model.classes_
-                top_preds = sorted(zip(classes, pred_probs), key=lambda x: x[1], reverse=True)[:5]
-                response = "<br>".join([f"{disease}: {prob*100:.2f}%" for disease, prob in top_preds])
-            except Exception as e:
-                response = f"⚠️ Error: {str(e)}"
-        else:
-            response = "Please enter symptoms."
+    
+    if request.method == "POST":
+        user_input = request.form["symptoms"]
+        try:
+            # Predict probabilities
+            probs = model.predict_proba([user_input])[0]
+            top_indices = probs.argsort()[-5:][::-1]
+            classes = model.classes_
+            prediction = [(classes[i], probs[i]) for i in top_indices if probs[i] > 0.01]
+        except Exception as e:
+            prediction = [("Error: " + str(e), 1.0)]
 
-        history.append({"user": user_input, "response": response})
-
-    return render_template("index.html", history=history)
+    return render_template("chatbot.html", prediction=prediction, user_input=user_input)
 
 if __name__ == "__main__":
     import os
