@@ -2,31 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Healthify | Symptom Chatbot</title>
+    <title>Healthify | AI Chatbot</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script defer src="{{ url_for('static', filename='chatbot.js') }}"></script>
 </head>
 <body class="chat-screen">
-    <div class="chat-container">
-        <h2>🩺 Healthify Assistant</h2>
-        <form method="post">
-            <textarea name="symptoms" placeholder="Enter your symptoms here..." required>{{ user_input }}</textarea>
-            <button type="submit">Diagnose</button>
+    <div class="chatbox">
+        <div class="chat-header">
+            🩺 Healthify AI Assistant
+        </div>
+
+        <div class="chat-history" id="chat-history">
+            {% if user_input %}
+                <div class="chat-bubble user">
+                    <p>{{ user_input }}</p>
+                </div>
+            {% endif %}
+
+            {% if prediction %}
+                <div class="chat-bubble bot">
+                    <p>I think you might have:</p>
+                    <ul>
+                        {% for disease, prob in prediction %}
+                            <li>
+                                <strong>{{ disease }}</strong> — {{ '%.2f'|format(prob * 100) }}%<br>
+                                <a href="https://www.google.com/search?q={{ disease|urlencode }} symptoms" target="_blank">🔍 Read more</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% elif error %}
+                <div class="chat-bubble bot error">
+                    <p>{{ error }}</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <form method="POST" class="chat-form">
+            <textarea name="symptoms" placeholder="Describe your symptoms..." required></textarea>
+            <button type="submit">Send</button>
         </form>
-
-        {% if prediction %}
-            <div class="bot-response">
-                <h3>🤖 I think it could be:</h3>
-                <ul>
-                    {% for disease, prob in prediction %}
-                        <li><strong>{{ disease }}</strong> — {{ '%.2f'|format(prob * 100) }}% 
-                            <a href="https://www.google.com/search?q={{ disease|urlencode }} symptoms" target="_blank">🔍 Read more</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
     </div>
-
-    <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
 </body>
 </html>
