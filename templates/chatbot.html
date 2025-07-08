@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Healthify | Symptom Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="chat-screen">
+    <div class="chat-container">
+        <h2>🩺 Healthify Assistant</h2>
+        <form method="post">
+            <textarea name="symptoms" placeholder="Enter your symptoms here..." required>{{ user_input }}</textarea>
+            <button type="submit">Diagnose</button>
+        </form>
+
+        {% if prediction %}
+            <div class="bot-response">
+                <h3>🤖 I think it could be:</h3>
+                <ul>
+                    {% for disease, prob in prediction %}
+                        <li><strong>{{ disease }}</strong> — {{ '%.2f'|format(prob * 100) }}% 
+                            <a href="https://www.google.com/search?q={{ disease|urlencode }} symptoms" target="_blank">🔍 Read more</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+
+    <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
+</body>
+</html>
