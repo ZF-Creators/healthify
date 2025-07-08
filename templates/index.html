@@ -2,56 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Healthify AI Chatbot</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Healthify - AI Symptom Checker</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body class="bg-gray-100 flex flex-col items-center justify-center h-screen p-4">
-    <div class="w-full max-w-xl bg-white shadow-lg rounded-lg overflow-hidden flex flex-col h-full">
-        <div class="bg-green-500 text-white px-4 py-3 text-xl font-semibold">
-            Healthify Bot 🤖
-        </div>
-        <div id="chatbox" class="flex-1 p-4 overflow-y-auto text-sm space-y-2">
-            <div class="text-gray-600 text-center italic">Ask me your health symptoms</div>
-        </div>
-        <form id="chat-form" class="p-4 border-t flex gap-2" action="/get_diagnosis" method="POST">
-            <input id="symptom-input" name="symptoms" type="text" placeholder="Enter symptoms here..." class="flex-1 px-3 py-2 border rounded focus:outline-none" required>
-            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Send</button>
+<body>
+    <div class="container">
+        <h1>🤖 Healthify</h1>
+        <p>Ask your health anytime, anywhere.</p>
+        
+        <form method="POST">
+            <textarea name="symptoms" rows="5" placeholder="Enter your symptoms here...">{{ user_input }}</textarea>
+            <button type="submit">Check Diagnosis</button>
         </form>
+
+        {% if prediction %}
+            <div class="result">
+                <h3>🩺 Predicted Disease:</h3>
+                <p>{{ prediction }}</p>
+            </div>
+        {% endif %}
     </div>
-
-    <script>
-        const chatForm = document.getElementById('chat-form');
-        const chatbox = document.getElementById('chatbox');
-        const symptomInput = document.getElementById('symptom-input');
-
-        chatForm.addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const userMessage = symptomInput.value;
-            if (!userMessage.trim()) return;
-
-            const userDiv = document.createElement('div');
-            userDiv.className = "bg-blue-100 text-blue-800 p-2 rounded self-end w-fit max-w-xs ml-auto";
-            userDiv.innerText = "🧍 " + userMessage;
-            chatbox.appendChild(userDiv);
-
-            symptomInput.value = "";
-            chatbox.scrollTop = chatbox.scrollHeight;
-
-            const res = await fetch("/get_diagnosis", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams({ symptoms: userMessage })
-            });
-
-            const botReply = await res.text();
-            const botDiv = document.createElement('div');
-            botDiv.className = "bg-gray-200 text-gray-800 p-2 rounded self-start w-fit max-w-xs mr-auto";
-            botDiv.innerText = "🤖 " + botReply;
-            chatbox.appendChild(botDiv);
-
-            chatbox.scrollTop = chatbox.scrollHeight;
-        });
-    </script>
 </body>
 </html>
