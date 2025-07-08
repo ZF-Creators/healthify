@@ -1,10 +1,18 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import joblib
+import numpy as np
+import os
 
 app = Flask(__name__)
 
-# Load trained model
+# Load the trained model
 model = joblib.load("backend/model.pkl")
+
+# Replace this with your actual list
+symptom_list = [
+    "fever", "cough", "sore throat", "headache", "fatigue", "vomiting",
+    "diarrhea", "nausea", "rash", "runny nose", "chills", "body pain"
+]
 
 @app.route("/")
 def home():
@@ -12,23 +20,31 @@ def home():
 
 @app.route("/chat", methods=["GET", "POST"])
 def chat():
-    prediction = None
-    user_input = ""
-    
     if request.method == "POST":
-        user_input = request.form["symptoms"]
-        try:
-            # Predict probabilities
-            probs = model.predict_proba([user_input])[0]
-            top_indices = probs.argsort()[-5:][::-1]
-            classes = model.classes_
-            prediction = [(classes[i], probs[i]) for i in top_indices if probs[i] > 0.01]
-        except Exception as e:
-            prediction = [("Error: " + str(e), 1.0)]
+        data = request.get_json()
+        user_msg = data.get("message", "")
 
-    return render_template("chatbot.html", prediction=prediction, user_input=user_input)
+        if not user_msg:
+            return jsonify({"error": "Empty message"})
+
+        msg_lower = user_msg.lower()
+        matched = [s for s in symptom_list if s in msg_lower]
+
+        try:
+            probs = model.predict_proba([user_msg])[0]
+            top_indices = np.argsort(probs)[-3:][::-1]
+            top_preds = [(model.classes_[i], float(probs[i])) for i in top_indices]
+
+            return jsonify({
+                "matched": matched,
+                "predictions": top_preds
+            })
+        except Exception as e:
+            print(f"Error: {e}")
+            return jsonify({"error": "⚠️ Something went wrong. Please try again."})
+
+    return render_template("chatbot.html")
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
