@@ -5,10 +5,11 @@ import os
 
 app = Flask(__name__)
 
-# Load the trained model
+# Load the model and vectorizer
 model = joblib.load("backend/model.pkl")
+vectorizer = joblib.load("backend/vectorizer.pkl")  # Make sure this exists
 
-# Replace this with your actual list
+# Sample symptoms
 symptom_list = [
     "fever", "cough", "sore throat", "headache", "fatigue", "vomiting",
     "diarrhea", "nausea", "rash", "runny nose", "chills", "body pain"
@@ -27,11 +28,14 @@ def chat():
         if not user_msg:
             return jsonify({"error": "Empty message"})
 
+        # Match user symptoms
         msg_lower = user_msg.lower()
         matched = [s for s in symptom_list if s in msg_lower]
 
         try:
-            probs = model.predict_proba([user_msg])[0]
+            # Transform input
+            vector = vectorizer.transform([user_msg])
+            probs = model.predict_proba(vector)[0]
             top_indices = np.argsort(probs)[-3:][::-1]
             top_preds = [(model.classes_[i], float(probs[i])) for i in top_indices]
 
@@ -40,8 +44,8 @@ def chat():
                 "predictions": top_preds
             })
         except Exception as e:
-            print(f"Error: {e}")
-            return jsonify({"error": "⚠️ Something went wrong. Please try again."})
+            print(f"🔥 Prediction error: {e}")
+            return jsonify({"error": f"Prediction error: {str(e)}"})
 
     return render_template("chatbot.html")
 
