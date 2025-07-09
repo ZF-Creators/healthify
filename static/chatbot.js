@@ -33,7 +33,6 @@ function sendMessage() {
     })
     .then(res => res.json())
     .then(data => {
-        // Remove thinking message
         thinkingMsg.remove();
 
         const botMsg = document.createElement("div");
@@ -43,7 +42,7 @@ function sendMessage() {
             botMsg.textContent = `❌ ${data.error}`;
         } else {
             const predictions = data.predictions
-                .map(([disease, prob]) => `${disease} (${(prob * 100).toFixed(1)}%)`)
+                .map(([disease, prob]) => `${disease} (${prob.toFixed(1)}%)`)
                 .join(", ");
             const matched = data.matched.length ? `Matched Symptoms: ${data.matched.join(", ")}` : "";
 
