@@ -1,19 +1,26 @@
 # backend/symptom_checker.py
 
 disease_symptoms = {
-    "fever": ["Flu", "Malaria", "COVID-19"],
-    "cough": ["Common Cold", "Bronchitis", "COVID-19"],
-    "sore throat": ["Strep Throat", "Common Cold"],
-    "headache": ["Migraine", "Tension Headache"],
-    "fatigue": ["Anemia", "Thyroid Issues", "Depression"],
-    "vomiting": ["Food Poisoning", "Stomach Flu"],
-    "diarrhea": ["Cholera", "Food Poisoning"],
-    "nausea": ["Pregnancy", "Food Poisoning"],
-    "rash": ["Allergy", "Measles"],
-    "runny nose": ["Cold", "Allergy"],
-    "chills": ["Malaria", "Flu"],
-    "body pain": ["Flu", "COVID-19"]
+    "Flu": ["fever", "chills", "body pain"],
+    "Malaria": ["fever", "chills"],
+    "COVID-19": ["fever", "cough", "body pain"],
+    "Common Cold": ["cough", "sore throat", "runny nose"],
+    "Bronchitis": ["cough"],
+    "Strep Throat": ["sore throat"],
+    "Migraine": ["headache"],
+    "Tension Headache": ["headache"],
+    "Anemia": ["fatigue"],
+    "Thyroid Issues": ["fatigue"],
+    "Depression": ["fatigue"],
+    "Food Poisoning": ["vomiting", "diarrhea", "nausea"],
+    "Stomach Flu": ["vomiting"],
+    "Cholera": ["diarrhea"],
+    "Pregnancy": ["nausea"],
+    "Allergy": ["rash", "runny nose"],
+    "Measles": ["rash"],
+    "Cold": ["runny nose"]
 }
+
 
 def match_symptoms(user_input):
     user_input = user_input.lower()
