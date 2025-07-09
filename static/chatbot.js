@@ -1,71 +1,66 @@
-async function sendMessage() {
+function sendMessage() {
     const input = document.getElementById("user-input");
-    const msg = input.value.trim();
-    if (!msg) return;
-
+    const message = input.value.trim();
     const chatBox = document.getElementById("chat-box");
 
-    // Add user message bubble
-    const userBubble = document.createElement("div");
-    userBubble.className = "user-msg";
-    userBubble.innerText = msg;
-    chatBox.appendChild(userBubble);
+    if (!message) return;
 
-    input.value = "";
+    // Show user's message
+    const userMsg = document.createElement("div");
+    userMsg.className = "user-msg";
+    userMsg.textContent = message;
+    chatBox.appendChild(userMsg);
 
-    // Add "Bot is thinking..." message
-    const thinkingBubble = document.createElement("div");
-    thinkingBubble.className = "bot-thinking";
-    thinkingBubble.innerText = "🤖 Bot is thinking...";
-    chatBox.appendChild(thinkingBubble);
+    // Scroll to latest
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    try {
-        // Send to backend
-        const res = await fetch("/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: msg })
-        });
+    // Clear input
+    input.value = "";
 
-        const data = await res.json();
+    // Show bot is thinking
+    const thinkingMsg = document.createElement("div");
+    thinkingMsg.className = "bot-thinking";
+    thinkingMsg.textContent = "Bot is thinking...";
+    chatBox.appendChild(thinkingMsg);
 
+    // Send to backend
+    fetch("/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: message })
+    })
+    .then(res => res.json())
+    .then(data => {
         // Remove thinking message
-        thinkingBubble.remove();
+        thinkingMsg.remove();
 
-        // Create bot response
-        const botBubble = document.createElement("div");
-        botBubble.className = "bot-msg";
+        const botMsg = document.createElement("div");
+        botMsg.className = "bot-msg";
 
         if (data.error) {
-            botBubble.innerText = "❌ " + data.error;
+            botMsg.textContent = `❌ ${data.error}`;
         } else {
-            let html = "<strong>🤖 I think it could be:</strong><ul>";
-            data.predictions.forEach(([disease, prob]) => {
-                const percent = (prob * 100).toFixed(2);
-                const link = `https://www.google.com/search?q=${encodeURIComponent(disease + " symptoms")}`;
-                html += `<li>${disease} — ${percent}% 
-                            <a href="${link}" target="_blank" class="read-more">🔍 Read more</a>
-                        </li>`;
-            });
-            html += "</ul>";
+            const predictions = data.predictions
+                .map(([disease, prob]) => `${disease} (${(prob * 100).toFixed(1)}%)`)
+                .join(", ");
+            const matched = data.matched.length ? `Matched Symptoms: ${data.matched.join(", ")}` : "";
 
-            if (data.matched && data.matched.length > 0) {
-                html += `<p><strong>🧩 Matched Symptoms:</strong> ${data.matched.join(", ")}</p>`;
-            }
-
-            botBubble.innerHTML = html;
+            botMsg.innerHTML = `
+                🤖 Possible diseases: <br><strong>${predictions}</strong><br>
+                <small>${matched}</small>
+            `;
         }
 
-        chatBox.appendChild(botBubble);
+        chatBox.appendChild(botMsg);
         chatBox.scrollTop = chatBox.scrollHeight;
-    } catch (err) {
-        thinkingBubble.remove();
-
-        const errorBubble = document.createElement("div");
-        errorBubble.className = "bot-msg";
-        errorBubble.innerText = "⚠️ Something went wrong. Please try again.";
-        chatBox.appendChild(errorBubble);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
+    })
+    .catch(err => {
+        thinkingMsg.remove();
+        const errorMsg = document.createElement("div");
+        errorMsg.className = "bot-msg";
+        errorMsg.textContent = "❌ Server error. Please try again later.";
+        chatBox.appendChild(errorMsg);
+    });
 }
