@@ -1,21 +1,29 @@
-import joblib
-import os
+# backend/symptom_checker.py
 
-# Ensure the model path is correct regardless of where it's run from
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "model.pkl")
+symptom_disease_map = {
+    "fever": ["Flu", "Malaria", "COVID-19"],
+    "cough": ["Common Cold", "Bronchitis", "COVID-19"],
+    "sore throat": ["Strep Throat", "Common Cold"],
+    "headache": ["Migraine", "Tension Headache"],
+    "fatigue": ["Anemia", "Thyroid Issues", "Depression"],
+    "vomiting": ["Food Poisoning", "Stomach Flu"],
+    "diarrhea": ["Cholera", "Food Poisoning"],
+    "nausea": ["Pregnancy", "Food Poisoning"],
+    "rash": ["Allergy", "Measles"],
+    "runny nose": ["Cold", "Allergy"],
+    "chills": ["Malaria", "Flu"],
+    "body pain": ["Flu", "COVID-19"]
+}
 
-# Load the trained pipeline (TF-IDF + Logistic Regression)
-model = joblib.load(MODEL_PATH)
+def match_symptoms(user_input):
+    user_input = user_input.lower()
+    matched_symptoms = [symptom for symptom in symptom_disease_map if symptom in user_input]
+    
+    possible_diseases = set()
+    for symptom in matched_symptoms:
+        possible_diseases.update(symptom_disease_map[symptom])
 
-def predict_disease(symptom_text):
-    """
-    Predicts the disease based on a string of symptoms entered by the user.
-
-    Parameters:
-    - symptom_text (str): A free-text description or list of symptoms
-
-    Returns:
-    - str: Predicted disease label
-    """
-    prediction = model.predict([symptom_text])
-    return prediction[0]
+    return {
+        "matched_symptoms": matched_symptoms,
+        "possible_diseases": list(possible_diseases)
+    }
