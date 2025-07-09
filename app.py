@@ -1,17 +1,8 @@
 from flask import Flask, render_template, request, jsonify
-import joblib
-import numpy as np
+from backend.symptom_checker import match_symptoms
 import os
 
 app = Flask(__name__)
-
-# ✅ Load entire pipeline
-model = joblib.load("backend/model.pkl")
-
-symptom_list = [
-    "fever", "cough", "sore throat", "headache", "fatigue", "vomiting",
-    "diarrhea", "nausea", "rash", "runny nose", "chills", "body pain"
-]
 
 @app.route("/")
 def home():
@@ -21,28 +12,28 @@ def home():
 def chat():
     if request.method == "POST":
         data = request.get_json()
-        user_msg = data.get("message", "")
+        user_msg = data.get("message", "").strip()
 
         if not user_msg:
-            return jsonify({"error": "Empty message"})
+            return jsonify({"error": "❌ Empty message"})
 
         try:
-            msg_lower = user_msg.lower()
-            matched = [s for s in symptom_list if s in msg_lower]
+            result = match_symptoms(user_msg)
 
-            # Predict using the full pipeline
-            probs = model.predict_proba([user_msg])[0]
-            top_indices = np.argsort(probs)[-3:][::-1]
-            top_preds = [(model.classes_[i], float(probs[i])) for i in top_indices]
+            if not result["matched_symptoms"]:
+                return jsonify({
+                    "matched": [],
+                    "predictions": ["❌ No recognizable symptoms found."]
+                })
 
             return jsonify({
-                "matched": matched,
-                "predictions": top_preds
+                "matched": result["matched_symptoms"],
+                "predictions": result["possible_diseases"]
             })
 
         except Exception as e:
-            print(f"Prediction Error: {e}")
-            return jsonify({"error": f"❌ {str(e)}"})
+            print(f"Error during processing: {e}")
+            return jsonify({"error": f"❌ Internal error: {str(e)}"})
 
     return render_template("chatbot.html")
 
