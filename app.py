@@ -1,8 +1,13 @@
 from flask import Flask, render_template, request, jsonify
-from backend.symptom_checker import match_symptoms
 import os
+from backend.symptom_checker import disease_symptoms  # 👈 import rule-based map
 
 app = Flask(__name__)
+
+symptom_list = [
+    "fever", "cough", "sore throat", "headache", "fatigue", "vomiting",
+    "diarrhea", "nausea", "rash", "runny nose", "chills", "body pain"
+]
 
 @app.route("/")
 def home():
@@ -12,28 +17,30 @@ def home():
 def chat():
     if request.method == "POST":
         data = request.get_json()
-        user_msg = data.get("message", "").strip()
+        user_msg = data.get("message", "").lower()
 
         if not user_msg:
-            return jsonify({"error": "❌ Empty message"})
+            return jsonify({"error": "Empty message"})
 
-        try:
-            result = match_symptoms(user_msg)
+        # Match symptoms
+        matched = [s for s in symptom_list if s in user_msg]
 
-            if not result["matched_symptoms"]:
-                return jsonify({
-                    "matched": [],
-                    "predictions": ["❌ No recognizable symptoms found."]
-                })
+        # Score diseases based on how many symptoms match
+        scored = []
+        for disease, symptoms in disease_symptoms.items():
+            match_count = len(set(matched) & set(symptoms))
+            score = match_count / len(symptoms)  # simple score %
+            if match_count > 0:
+                scored.append((disease, round(score * 100, 2)))
 
-            return jsonify({
-                "matched": result["matched_symptoms"],
-                "predictions": result["possible_diseases"]
-            })
+        # Sort diseases by score
+        scored.sort(key=lambda x: x[1], reverse=True)
+        top_preds = scored[:3]
 
-        except Exception as e:
-            print(f"Error during processing: {e}")
-            return jsonify({"error": f"❌ Internal error: {str(e)}"})
+        return jsonify({
+            "matched": matched,
+            "predictions": top_preds
+        })
 
     return render_template("chatbot.html")
 
