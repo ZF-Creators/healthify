@@ -5,19 +5,9 @@ import os
 
 app = Flask(__name__)
 
-# ✅ Load the entire pipeline (vectorizer + model)
+# ✅ Load entire pipeline
 model = joblib.load("backend/model.pkl")
 
-# 🔍 TEST THE MODEL IMMEDIATELY AFTER LOADING
-print("✅ Model loaded. Testing prediction...")
-
-try:
-    test_output = model.predict(["fever and headache"])
-    print("✅ Model test prediction successful! Output:", test_output)
-except Exception as e:
-    print("❌ Error while testing model prediction:", e)
-
-# Symptom list (optional for matching text)
 symptom_list = [
     "fever", "cough", "sore throat", "headache", "fatigue", "vomiting",
     "diarrhea", "nausea", "rash", "runny nose", "chills", "body pain"
@@ -37,11 +27,10 @@ def chat():
             return jsonify({"error": "Empty message"})
 
         try:
-            # Match symptoms from input
             msg_lower = user_msg.lower()
             matched = [s for s in symptom_list if s in msg_lower]
 
-            # Use the model directly
+            # Predict using the full pipeline
             probs = model.predict_proba([user_msg])[0]
             top_indices = np.argsort(probs)[-3:][::-1]
             top_preds = [(model.classes_[i], float(probs[i])) for i in top_indices]
@@ -52,7 +41,7 @@ def chat():
             })
 
         except Exception as e:
-            print(f"Error during prediction: {e}")
+            print(f"Prediction Error: {e}")
             return jsonify({"error": f"❌ {str(e)}"})
 
     return render_template("chatbot.html")
