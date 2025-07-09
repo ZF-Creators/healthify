@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request, jsonify
 import os
-from backend.symptom_checker import disease_symptoms  # 👈 import updated structure
+from backend.symptom_checker import disease_symptoms  # Make sure this is the updated dict
 
 app = Flask(__name__)
 
-# Flat list of all known symptoms from the new structure
+# Flatten all symptoms from disease_symptoms into a master symptom list
 symptom_list = list(set(
-    s for disease in disease_symptoms.values() for s in disease["symptoms"]
+    s for symptoms in disease_symptoms.values() for s in symptoms
 ))
 
 @app.route("/")
@@ -22,25 +22,23 @@ def chat():
         if not user_msg:
             return jsonify({"error": "Empty message"})
 
-        # Match symptoms
+        # Match symptoms from message
         matched = [s for s in symptom_list if s in user_msg]
 
-        # Score diseases based on symptom matches and fixed score range
+        # Calculate scores for diseases
         scored = []
-        for disease, info in disease_symptoms.items():
-            symptoms = info["symptoms"]
-            score_range = info["score_range"]
+        for disease, symptoms in disease_symptoms.items():
             if not symptoms:
                 continue
-
             match_count = len(set(matched) & set(symptoms))
             if match_count > 0:
-                # Optional: Use average score instead of range
-                avg_score = round((score_range[0] + score_range[1]) / 2, 1)
-                scored.append((disease, avg_score))
+                percent = round((match_count / len(symptoms)) * 100, 1)
+                scored.append((disease, percent))
 
-        # Sort and pick top 3
+        # Sort diseases by match %
         scored.sort(key=lambda x: x[1], reverse=True)
+
+        # Take top 3 predictions
         top_preds = scored[:3] if scored else [("No strong match found", 0)]
 
         return jsonify({
