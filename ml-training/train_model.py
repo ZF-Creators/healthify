@@ -1,31 +1,35 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
 import joblib
+import os
 
-# Load the dataset
-df = pd.read_csv("dataset.csv")
+# ✅ Make sure backend folder exists
+os.makedirs("backend", exist_ok=True)
 
-# Convert string of symptoms to list
-df['symptoms'] = df['symptoms'].apply(lambda x: [i.strip() for i in x.split(',')])
+# ✅ Load your dataset
+df = pd.read_csv("C:/Users/faraz/Downloads/Healthify/ml-training/disease_symptom_classifier.csv")
 
-# Prepare symptom columns
-mlb = MultiLabelBinarizer()
-X = mlb.fit_transform(df['symptoms'])
+# ✅ Check columns
+if not {'label', 'text'}.issubset(df.columns):
+    raise ValueError("The dataset must have 'label' and 'text' columns")
 
-# Target variable
-y = df['disease']
+X = df['text']
+y = df['label']
 
-# Split data
+# ✅ Train-test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Train the model
-model = RandomForestClassifier(n_estimators=100, random_state=42)
+# ✅ Create pipeline (includes vectorizer)
+model = Pipeline([
+    ("vectorizer", TfidfVectorizer()),
+    ("classifier", LogisticRegression(max_iter=200))
+])
 model.fit(X_train, y_train)
 
-# Save model and symptom list
-joblib.dump(model, "model.pkl")
-joblib.dump(mlb, "symptom_encoder.pkl")
+# ✅ Save only the model
+joblib.dump(model, "backend/model.pkl", compress=9)
 
-print("✅ Model trained and saved as model.pkl")
+print(f"✅ Model trained! Accuracy: {model.score(X_test, y_test)*100:.2f}%")
