@@ -44,7 +44,7 @@ def chat():
 
         except Exception as e:
             print(f"Error during prediction: {e}")
-            return jsonify({"error": "⚠️ Something went wrong. Please try again."})
+            return jsonify({"error": f"❌ {str(e)}"})
 
     return render_template("chatbot.html")
 
