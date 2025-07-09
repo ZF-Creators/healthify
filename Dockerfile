@@ -19,4 +19,4 @@ COPY . /app/
 EXPOSE 5000
 
 # Start the app using gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:$PORT"]
