@@ -1,6 +1,6 @@
 # backend/symptom_checker.py
 
-symptom_disease_map = {
+disease_symptoms = {
     "fever": ["Flu", "Malaria", "COVID-19"],
     "cough": ["Common Cold", "Bronchitis", "COVID-19"],
     "sore throat": ["Strep Throat", "Common Cold"],
@@ -17,11 +17,11 @@ symptom_disease_map = {
 
 def match_symptoms(user_input):
     user_input = user_input.lower()
-    matched_symptoms = [symptom for symptom in symptom_disease_map if symptom in user_input]
+    matched_symptoms = [symptom for symptom in disease_symptoms if symptom in user_input]
     
     possible_diseases = set()
     for symptom in matched_symptoms:
-        possible_diseases.update(symptom_disease_map[symptom])
+        possible_diseases.update(disease_symptoms[symptom])
 
     return {
         "matched_symptoms": matched_symptoms,
