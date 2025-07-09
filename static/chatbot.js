@@ -42,7 +42,7 @@ function sendMessage() {
             botMsg.textContent = `❌ ${data.error}`;
         } else {
             const predictions = data.predictions
-                .map(([disease, prob]) => `${disease} (${prob.toFixed(1)}%)`)
+                .map(([disease, prob]) => `${disease} (${prob}%)`)
                 .join(", ");
             const matched = data.matched.length ? `Matched Symptoms: ${data.matched.join(", ")}` : "";
 
