@@ -4,10 +4,10 @@ from backend.symptom_checker import disease_symptoms  # 👈 import rule-based m
 
 app = Flask(__name__)
 
-symptom_list = [
-    "fever", "cough", "sore throat", "headache", "fatigue", "vomiting",
-    "diarrhea", "nausea", "rash", "runny nose", "chills", "body pain"
-]
+# Flat list of all known symptoms from disease_symptoms keys
+symptom_list = list(set(
+    s for symptoms in disease_symptoms.values() for s in symptoms
+))
 
 @app.route("/")
 def home():
@@ -25,21 +25,19 @@ def chat():
         # Match symptoms
         matched = [s for s in symptom_list if s in user_msg]
 
-        # Score diseases based on how many symptoms match
+        # Score diseases based on symptom matches
         scored = []
         for disease, symptoms in disease_symptoms.items():
+            if not symptoms:
+                continue
             match_count = len(set(matched) & set(symptoms))
-            score = match_count / len(symptoms)  # simple score %
             if match_count > 0:
-                scored.append((disease, round(score * 100, 2)))
+                percentage = round((match_count / len(symptoms)) * 100, 2)
+                scored.append((disease, percentage))
 
-        # Sort diseases by score
+        # Sort top 3 diseases
         scored.sort(key=lambda x: x[1], reverse=True)
-        top_preds = scored[:3]
-
-        # ✅ Add fallback if no diseases matched
-        if not top_preds:
-            top_preds = [("No strong match found", 0)]
+        top_preds = scored[:3] if scored else [("No strong match found", 0)]
 
         return jsonify({
             "matched": matched,
