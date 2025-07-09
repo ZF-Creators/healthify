@@ -37,6 +37,10 @@ def chat():
         scored.sort(key=lambda x: x[1], reverse=True)
         top_preds = scored[:3]
 
+        # ✅ Add fallback if no diseases matched
+        if not top_preds:
+            top_preds = [("No strong match found", 0)]
+
         return jsonify({
             "matched": matched,
             "predictions": top_preds
