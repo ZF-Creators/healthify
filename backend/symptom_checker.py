@@ -1,26 +1,24 @@
 # backend/symptom_checker.py
 
 disease_symptoms = {
-    "Flu": ["fever", "chills", "body pain"],
-    "Malaria": ["fever", "chills"],
-    "COVID-19": ["fever", "cough", "body pain"],
-    "Common Cold": ["cough", "sore throat", "runny nose"],
-    "Bronchitis": ["cough"],
-    "Strep Throat": ["sore throat"],
-    "Migraine": ["headache"],
-    "Tension Headache": ["headache"],
-    "Anemia": ["fatigue"],
-    "Thyroid Issues": ["fatigue"],
-    "Depression": ["fatigue"],
-    "Food Poisoning": ["vomiting", "diarrhea", "nausea"],
-    "Stomach Flu": ["vomiting"],
-    "Cholera": ["diarrhea"],
-    "Pregnancy": ["nausea"],
-    "Allergy": ["rash", "runny nose"],
-    "Measles": ["rash"],
-    "Cold": ["runny nose"]
+    "Viral Fever (Non-specific virus)": {
+        "symptoms": ["fever", "body pain", "fatigue"],
+        "score_range": (40, 50)
+    },
+    "Influenza (Flu)": {
+        "symptoms": ["fever", "cough", "sore throat", "body pain"],
+        "score_range": (20, 25)
+    },
+    "Dengue Fever": {
+        "symptoms": ["fever", "rash", "headache", "vomiting"],
+        "score_range": (10, 15)
+    },
+    "COVID-19": {
+        "symptoms": ["fever", "cough", "sore throat", "body pain", "chills"],
+        "score_range": (10, 15)
+    },
+    # Add more diseases here if needed
 }
-
 
 def match_symptoms(user_input):
     user_input = user_input.lower()
