@@ -17,5 +17,53 @@
             <button onclick="sendMessage()">Send</button>
         </div>
     </div>
+
+    <script>
+        async function sendMessage() {
+            const inputField = document.getElementById("user-input");
+            const message = inputField.value.trim();
+            const chatBox = document.getElementById("chat-box");
+
+            if (!message) return;
+
+            // Show user message
+            const userMsg = document.createElement("div");
+            userMsg.classList.add("user-msg");
+            userMsg.innerText = message;
+            chatBox.appendChild(userMsg);
+            inputField.value = "";
+
+            try {
+                const res = await fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await res.json();
+
+                const botMsg = document.createElement("div");
+                botMsg.classList.add("bot-msg");
+
+                if (data.error) {
+                    botMsg.innerText = data.error;
+                } else {
+                    botMsg.innerHTML = `
+                        <strong>✅ Matched Symptoms:</strong> ${data.matched.join(", ") || "None"}<br>
+                        <strong>🦠 Possible Diseases:</strong> ${data.predictions.join(", ")}
+                    `;
+                }
+
+                chatBox.appendChild(botMsg);
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+            } catch (err) {
+                const botMsg = document.createElement("div");
+                botMsg.classList.add("bot-msg");
+                botMsg.innerText = "❌ Something went wrong. Please try again.";
+                chatBox.appendChild(botMsg);
+            }
+        }
+    </script>
 </body>
 </html>
