@@ -8,6 +8,15 @@ app = Flask(__name__)
 # ✅ Load the entire pipeline (vectorizer + model)
 model = joblib.load("backend/model.pkl")
 
+# 🔍 TEST THE MODEL IMMEDIATELY AFTER LOADING
+print("✅ Model loaded. Testing prediction...")
+
+try:
+    test_output = model.predict(["fever and headache"])
+    print("✅ Model test prediction successful! Output:", test_output)
+except Exception as e:
+    print("❌ Error while testing model prediction:", e)
+
 # Symptom list (optional for matching text)
 symptom_list = [
     "fever", "cough", "sore throat", "headache", "fatigue", "vomiting",
